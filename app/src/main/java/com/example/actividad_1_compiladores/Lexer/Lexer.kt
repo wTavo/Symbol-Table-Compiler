@@ -5,10 +5,14 @@ class Lexer(private val codigo: String) {
     private val tablaSimbolos = TablaSimbolos()
     private var posicion = 0
 
-    // Lista de palabras reservadas
+    // Categorización de palabras reservadas
+    private val tiposDatos = setOf("entero", "flotante", "booleano", "caracter", "cadena")
+    private val booleanos = setOf("verdadero", "falso")
+    private val condicionales = setOf("si", "sino")
+    private val estructurasRepetitivas = setOf("mientras", "para")
     private val palabrasReservadas = setOf(
-        "principal", "entero", "flotante", "booleano", "caracter", "cadena", "arreglo",
-        "verdadero", "falso", "imprimir", "si", "sino", "mientras", "para", "publico", "privado"
+        "principal", "arreglo",
+        "imprimir", "publico", "privado", "clase"
     )
 
     fun analizar(): Pair<List<Token>, TablaSimbolos> {
@@ -17,18 +21,30 @@ class Lexer(private val codigo: String) {
                 // Ignorar espacios en blanco y saltos de línea
                 ' ', '\t', '\n', '\r' -> posicion++
 
-                // Identificadores (variables, funciones, etc.)
+                // Identificadores y palabras reservadas
                 in 'a'..'z', in 'A'..'Z', '_' -> {
                     val identificador = leerIdentificador()
 
-                    // Verificar si es una palabra reservada
-                    if (identificador in palabrasReservadas) {
-                        tokens.add(Token(TokenType.PALABRA_RESERVADA, identificador))
-                        tablaSimbolos.agregar(identificador, TokenType.PALABRA_RESERVADA.toString())
-                    } else {
-                        // Es un identificador (variable, función, etc.)
-                        tokens.add(Token(TokenType.IDENTIFICADOR, identificador))
-                        tablaSimbolos.agregar(identificador, TokenType.IDENTIFICADOR.toString())
+                    // Categorizar según el tipo
+                    val tipo = when {
+                        identificador in booleanos -> TokenType.BOOLEANO
+                        identificador in condicionales -> TokenType.CONDICIONAL
+                        identificador in estructurasRepetitivas -> TokenType.ESTRUCTURA_REPETITIVA
+                        identificador in tiposDatos -> TokenType.TIPO_DATO
+                        identificador in palabrasReservadas -> TokenType.PALABRA_RESERVADA
+                        else -> TokenType.IDENTIFICADOR
+                    }
+
+                    tokens.add(Token(tipo, identificador))
+                    tablaSimbolos.agregar(identificador, tipo.toString())
+
+                    // Verificar si es una declaración de arreglo
+                    if (posicion < codigo.length && codigo[posicion] == '[') {
+                        val arrayDecl = leerDeclaracionArreglo()
+                        if (arrayDecl.isNotEmpty()) {
+                            tokens.add(Token(TokenType.ARREGLO, arrayDecl))
+                            tablaSimbolos.agregar(arrayDecl, TokenType.ARREGLO.toString())
+                        }
                     }
                 }
 
@@ -44,7 +60,7 @@ class Lexer(private val codigo: String) {
                     }
                 }
 
-                // Operadores y símbolos
+                // Operadores
                 '+', '-', '*', '/', '%', '=', '>', '<', '!', '&', '|' -> {
                     val operador = leerOperador(caracter)
                     val tipo = when (operador) {
@@ -59,8 +75,30 @@ class Lexer(private val codigo: String) {
                 }
 
                 // Delimitadores
-                '(', ')', '{', '}', '[', ']', ';' -> {
-                    val token = Token(TokenType.DELIMITADORES, caracter.toString())
+                '(', ')', '{', '}', '[', ']' -> {
+                    val token = Token(TokenType.DELIMITADOR, caracter.toString())
+                    tokens.add(token)
+                    tablaSimbolos.agregar(caracter.toString(), token.tipo.toString())
+                    posicion++
+                }
+
+                // Coma
+                ',' -> {
+                    tokens.add(Token(TokenType.SEPARADOR, caracter.toString()))
+                    tablaSimbolos.agregar(caracter.toString(), TokenType.SEPARADOR.toString())
+                    posicion++
+                }
+
+                // Punto
+                '.' -> {
+                    tokens.add(Token(TokenType.ACCESO_METODO, caracter.toString()))
+                    tablaSimbolos.agregar(caracter.toString(), TokenType.ACCESO_METODO.toString())
+                    posicion++
+                }
+
+                // Fin de instrucción
+                '~' -> {
+                    val token = Token(TokenType.DELIMITADOR_FIN_INSTRUCCION, caracter.toString())
                     tokens.add(token)
                     tablaSimbolos.agregar(caracter.toString(), token.tipo.toString())
                     posicion++
@@ -73,7 +111,6 @@ class Lexer(private val codigo: String) {
                     tablaSimbolos.agregar(cadena, TokenType.CADENA.toString())
                 }
 
-                // Cualquier otro carácter desconocido
                 else -> throw IllegalArgumentException("Carácter desconocido: $caracter")
             }
         }
@@ -90,6 +127,17 @@ class Lexer(private val codigo: String) {
             } else {
                 break
             }
+        }
+        return sb.toString()
+    }
+
+    private fun leerDeclaracionArreglo(): String {
+        val sb = StringBuilder()
+        while (posicion < codigo.length) {
+            val c = codigo[posicion]
+            sb.append(c)
+            posicion++
+            if (c == ']') break
         }
         return sb.toString()
     }
@@ -117,7 +165,6 @@ class Lexer(private val codigo: String) {
         val sb = StringBuilder()
         sb.append(caracter)
         posicion++
-        // Verificar si es un operador compuesto (==, !=, +=, etc.)
         if (posicion < codigo.length) {
             val siguiente = codigo[posicion]
             when (caracter) {
@@ -134,11 +181,11 @@ class Lexer(private val codigo: String) {
 
     private fun leerCadena(): String {
         val sb = StringBuilder()
-        posicion++ // Saltar la comilla de apertura
+        posicion++
         while (posicion < codigo.length) {
             val c = codigo[posicion]
             if (c == '"') {
-                posicion++ // Saltar la comilla de cierre
+                posicion++
                 break
             } else {
                 sb.append(c)

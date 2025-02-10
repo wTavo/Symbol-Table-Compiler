@@ -7,7 +7,8 @@ enum class TokenType(val pattern: String) {
     CARACTER("'.'"), // Caracteres individuales
     BOOLEANO("verdadero|falso"), // Valores booleanos
     ARREGLO("\\b(entero|flotante|booleano|caracter|cadena)\\[\\]"), // Ejemplo: entero[], flotante[]
-    PALABRA_RESERVADA("\\b(principal|entero|flotante|booleano|caracter|cadena|arreglo|verdadero|falso|imprimir|publico|privado)\\b"),
+    PALABRA_RESERVADA("\\b(principal|entero|flotante|booleano|caracter|cadena|arreglo|verdadero|falso|imprimir|publico|privado|clase)\\b"),
+    TIPO_DATO("\\b(entero|flotante|booleano|caracter|cadena)"),
     IDENTIFICADOR("[a-zA-Z_][a-zA-Z0-9_]*"),
     CONDICIONAL("\\b(si|sino)\\b"),
     ESTRUCTURA_REPETITIVA("\\b(mientras|para)\\b"),
@@ -16,7 +17,9 @@ enum class TokenType(val pattern: String) {
     OPERADOR_COMPARACION("==|!=|<=|>=|<|>"), // ==, !=, <=, >=, <, >
     OPERADOR_LOGICO("AND|OR|NOT"),
     DELIMITADOR_FIN_INSTRUCCION("XD"),
-    DELIMITADORES("[\\[\\]{}()]"),
+    DELIMITADOR("[\\[\\]{}()]"),
+    SEPARADOR(","), // Coma
+    ACCESO_METODO("\\."), // Punto
     ESPACIO("\\s+"),
     DESCONOCIDO("")
 }

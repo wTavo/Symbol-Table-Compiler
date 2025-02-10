@@ -11,7 +11,7 @@ class TablaSimbolos {
     }
 
     fun mostrar() {
-        println("Tabla de simbolos:")
+        println("\nTabla de simbolos:")
         println("ID\tNombre\t\tCategoria")
         simbolos.forEach { info ->
             println("${info.id}\t${info.nombre}\t\t${info.tipo}")
