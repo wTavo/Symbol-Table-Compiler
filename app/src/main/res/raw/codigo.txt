@@ -1,0 +1,9 @@
+principal {
+    entero x = 10;
+    entero y = 20;
+    si (x > y) {
+        imprimir("X es mayor que Y");
+    } sino {
+        imprimir("Y es mayor que X");
+    }
+}
