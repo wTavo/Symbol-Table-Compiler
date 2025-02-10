@@ -18,7 +18,7 @@ enum class TokenType(val pattern: String) {
     OPERADOR_LOGICO("AND|OR|NOT"),
     DELIMITADOR_FIN_INSTRUCCION("XD"),
     DELIMITADOR("[\\[\\]{}()]"),
-    SEPARADOR(","), // Coma
+    SEPARADOR(",|;"), // Coma
     ACCESO_METODO("\\."), // Punto
     ESPACIO("\\s+"),
     DESCONOCIDO("")

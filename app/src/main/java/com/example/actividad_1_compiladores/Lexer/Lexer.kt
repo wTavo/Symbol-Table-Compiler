@@ -82,14 +82,14 @@ class Lexer(private val codigo: String) {
                     posicion++
                 }
 
-                // Coma
-                ',' -> {
+                // Separadores
+                ',', ';' -> {
                     tokens.add(Token(TokenType.SEPARADOR, caracter.toString()))
                     tablaSimbolos.agregar(caracter.toString(), TokenType.SEPARADOR.toString())
                     posicion++
                 }
 
-                // Punto
+                // Acceder a métodos
                 '.' -> {
                     tokens.add(Token(TokenType.ACCESO_METODO, caracter.toString()))
                     tablaSimbolos.agregar(caracter.toString(), TokenType.ACCESO_METODO.toString())
