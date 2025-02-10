@@ -24,14 +24,6 @@ fun main() {
         // Analizamos el código
         val (tokens, tablaSimbolos) = lexer.analizar()
 
-        // Mostramos los tokens encontrados
-        println("\nTokens encontrados:")
-        tokens.forEachIndexed { index, token ->
-            println("${index + 1}. ${token.tipo}: ${token.valor}")
-        }
-
-        // Mostramos la tabla de símbolos
-        println("\nTabla de símbolos:")
         tablaSimbolos.mostrar()
     } catch (e: IllegalArgumentException) {
         println("Error al analizar el código: ${e.message}")

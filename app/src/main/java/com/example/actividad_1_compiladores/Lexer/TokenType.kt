@@ -16,7 +16,7 @@ enum class TokenType(val pattern: String) {
     OPERADOR_ASIGNACION("=|\\+=|-=|\\*=|/=|%="), // =, +=, -=, *=, /=, %=
     OPERADOR_COMPARACION("==|!=|<=|>=|<|>"), // ==, !=, <=, >=, <, >
     OPERADOR_LOGICO("AND|OR|NOT"),
-    DELIMITADOR_FIN_INSTRUCCION("XD"),
+    DELIMITADOR_FIN_INSTRUCCION("~"),
     DELIMITADOR("[\\[\\]{}()]"),
     SEPARADOR(",|;"), // Coma
     ACCESO_METODO("\\."), // Punto
